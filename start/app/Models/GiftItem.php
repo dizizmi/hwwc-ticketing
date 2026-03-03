@@ -13,5 +13,11 @@ class GiftItem extends Model
         'redeemed'
     ];
 
+    #method declaration
+    public function redemptions()
+    {
+        return $this->hasMany(Redemption::class);
+    }
+
     
 }
