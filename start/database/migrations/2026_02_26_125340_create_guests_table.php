@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('GB Company');
-            $table->string('GB Role');
+            $table->string('phone')->nullable();
             $table->foreignId('lanyard_type_id')->constrained()->onDelete('restrict'); 
             /** constrained ft is lanyard_type w same data type, onDelete on FK, restrict means parent cannot be deleted if child records still referncing it   */
             $table->boolean('checked_in')->default(false);
