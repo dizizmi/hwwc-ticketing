@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\LanyardType;
 
 class Guest extends Model
 {
@@ -16,10 +17,10 @@ class Guest extends Model
 
     ];
 
-    public function lanyard_types() 
+    public function lanyard_type() 
     {
         return $this->belongsTo(LanyardType::class);   
     }
 
-    
+
 }   

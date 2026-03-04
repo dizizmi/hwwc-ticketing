@@ -3,22 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Guest;
 use App\Models\Redemption;
 
-class GiftItem extends Model
+class Ticket extends Model
 {
     protected $fillable = [
-        'name',
-        'size',
-        'quantity',
-        'redeemed'
+        'ticket_code',
+        'guest_id',
+        'is_active'
+
     ];
 
-    #method declaration
+    public function guest()
+    {
+        return $this->belongsTo(Guest::class);
+    }
+
     public function redemptions()
     {
         return $this->hasMany(Redemption::class);
     }
-
-
 }
