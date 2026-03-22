@@ -28,10 +28,16 @@ class GuestController extends Controller
         ]);
 
         //ticket code for new user
-
+        //note a random 10 upper case code is generated for every new created & requested guest
         $guest = Guest::create($request->all());
 
-        
+        $ticket = Ticket::create([
+            'ticket_code' => strtoupper(Str::random(10)),
+            'guest_id' => $guest->id,
+            'is_active' => true,
+        ]);
+
+
 
     }
 }
