@@ -16,7 +16,15 @@ use Illumiunate\Support\Facades\Cache;
 */
 
 class GuestController extends Controller
-{
+{   
+    //list all guest
+    public function index(){
+        $guests = Guest::with('lanyardType')->get();
+
+        return response()->json($guests);
+    }
+
+
     //register
     public function store(Request $request)
     {
