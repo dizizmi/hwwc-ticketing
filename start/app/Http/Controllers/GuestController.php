@@ -49,13 +49,35 @@ class GuestController extends Controller
     public function findByTicket(string $code)
     {
         $ticket = Ticket::with(['guest.lanyardType', 'redemptions.giftItem'])
-            ->where('ticket_code', $code);
+            ->where('ticket_code', $code)
+            ->first(); //retrieve first element
         
         if (!$ticket) {
             return response()->json(['message' => 'Ticket not found'], 404);
         }
 
         return response()->json($ticket);
+    }
+
+    public function checkIn(string $code) {
+        $ticket = Ticket::with('guest')
+            ->where('ticket_code', $code)
+            ->first(); //retrieve first element
+
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket not found'], 404); //not found error
+        }
+
+        if ($ticket->guest->checked_in){
+            return response()->json(['message' => 'Guest alr checked in'], 409); //duplicate existing error
+        }
+
+        $ticket->guest->update([
+            'checked_in' => true,
+            'checked_in_at' => now(),
+        ]); 
+        
+
     }
 
 }

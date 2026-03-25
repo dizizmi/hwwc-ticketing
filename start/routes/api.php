@@ -13,6 +13,6 @@ Route::middleware('auth:api')->group(function () {
     //guests
     Route::get('guests', [GuestController::class, 'index']);
     Route::get('guests/ticket/{code}', [GuestController::class, 'findByTicket']);
-    
+    Route::post('guests/ticket/{code}/checkin', [GuestController::class, 'checkIn']);
 
 });
