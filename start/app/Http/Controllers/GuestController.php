@@ -44,8 +44,18 @@ class GuestController extends Controller
             'guest_id' => $guest->id,
             'is_active' => true,
         ]);
-
-
-
     }
+
+    public function findByTicket(string $code)
+    {
+        $ticket = Ticket::with(['guest.lanyardType', 'redemptions.giftItem'])
+            ->where('ticket_code', $code);
+        
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket not found'], 404);
+        }
+
+        return response()->json($ticket);
+    }
+
 }
