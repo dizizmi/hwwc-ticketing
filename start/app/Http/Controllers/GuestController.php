@@ -6,7 +6,7 @@ use App\Models\Guest;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illumiunate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cache;
 
 /* so guest we will  
 1. register, 
@@ -19,7 +19,10 @@ class GuestController extends Controller
 {   
     //list all guest
     public function index(){
-        $guests = Guest::with('lanyardType')->get();
+        $guests = Cache::remember('guests_all',60, function () {
+            return Guest::with('lanyardType')->get();
+            
+         });
 
         return response()->json($guests);
     }
@@ -44,14 +47,24 @@ class GuestController extends Controller
             'guest_id' => $guest->id,
             'is_active' => true,
         ]);
+
+        Cache::forget('guests_all');
+
+        return response()->json([
+            'message' => 'Guest registered succesfully',
+            'guest' => $guest,
+            'ticket' => $ticket, 
+        ], 201);
     }
 
     public function findByTicket(string $code)
     {
-        $ticket = Ticket::with(['guest.lanyardType', 'redemptions.giftItem'])
-            ->where('ticket_code', $code)
-            ->first(); //retrieve first element
-        
+        $ticket = Cache::remember("ticket_{$code}", 30, function () use ($code) {
+            return Ticket::with(['guest.lanyardType', 'redemptions.giftItem'])
+                ->where('ticket_code', $code)
+                ->first(); //retrieve first element
+        }); 
+
         if (!$ticket) {
             return response()->json(['message' => 'Ticket not found'], 404);
         }
@@ -76,7 +89,14 @@ class GuestController extends Controller
             'checked_in' => true,
             'checked_in_at' => now(),
         ]); 
-        
+
+        Cache::forget("ticket_{$code}");
+        Cache::forget('guests_all');
+
+        return response()->json([
+            'message' => 'Guest checked in successfully',
+            'guest' => $ticket->guest,
+        ]);
 
     }
 
