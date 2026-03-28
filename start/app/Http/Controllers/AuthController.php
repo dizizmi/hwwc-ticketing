@@ -25,7 +25,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = Auth::guard('api')->login($user);
+        $token = $user->createToken('event-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Staff account created successfully',
@@ -41,35 +41,54 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
+         //explicitly find and verify the user manually
+        $user = \App\Models\User::where('email', $request->email)->first();
 
-        if (!$token = Auth::guard('api')->attempt($credentials)) {
+        if (!$user || !\Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+
+
+
+        /*
+        if (!Auth::attempt($request->only('email', 'password'))){
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        $user = Auth::user();
+        */
+        $token = $user->createToken('event-token')->plainTextToken;
+        
+
+       /* if (!$token = Auth::guard('api')->attempt($credentials)) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
-        }
+        } */
 
         return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'token_type' => 'bearer',
+            'user' => $user,
+            'token' => $token
+        
         ]);
         
 
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::guard('api')->logout();
+        
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
     }
 
-    public function me()
+    public function me(Request $request)
     {
-        return response()->json(Auth::guard('api')->user());
+        return response()->json($request->user());
     }
 }
 
