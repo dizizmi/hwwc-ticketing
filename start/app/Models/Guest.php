@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\LanyardType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Guest extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'email',
@@ -17,10 +20,13 @@ class Guest extends Model
 
     ];
 
-    public function lanyard_type() 
+    public function lanyardType() 
     {
         return $this->belongsTo(LanyardType::class);   
     }
 
-
+    public function ticket()
+    {
+        return $this->hasOne(Ticket::class);
+    }
 }   
