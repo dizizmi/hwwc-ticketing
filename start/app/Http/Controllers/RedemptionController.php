@@ -58,3 +58,16 @@
         ], 201);
     
         }
+    public function history(string $code)
+    {
+        $ticket = Ticket::with(['redemptions.giftItem', 'guest'])
+            ->where('ticket_code', $code)
+            ->first();
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket no found'], 404);
+        }
+        return response()->json([
+            'guest' => $ticket->guest,
+            'redemptions' => $ticket->redemptions,
+        ]);
+    }
