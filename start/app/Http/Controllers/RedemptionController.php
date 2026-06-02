@@ -71,3 +71,13 @@
             'redemptions' => $ticket->redemptions,
         ]);
     }
+    //all redemptions (for report tab)
+    public function allRedemptions()
+    {
+        $redemptions = Redemption::with(['ticket.guest', 'giftItem', 'user'])
+            ->latest()
+            ->get();
+
+        return response()->json($redemptions);
+    } 
+
