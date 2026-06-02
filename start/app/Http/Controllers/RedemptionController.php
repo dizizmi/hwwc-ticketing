@@ -28,3 +28,33 @@
         $redemption = DB::transaction(function () use ($ticket, $request){
             $giftItem = GiftItem::lockForUpdate()->find($request->gift_item_id);
 
+            //check inventory
+            if ($giftItem->redeemed >= $giftItem->quantity){
+                throw new \Exception('Gift item no more');
+            }
+
+            //create redemption record
+            $redemption = Redemption::create([
+                'ticket_id' => $ticket->id,
+                'gift_item_id' => $giftItem->id,
+                'user_id' => Auth::id(),
+                'redeemed_at' => now(),
+            ]);
+
+            //decrement inventory
+            $giftItem-> increment('redeemed');
+
+            //clear relevant caches
+            Cache::forget("ticket_{$ticket->ticket_code}");
+            Cache::forget('gift_items_all');
+            
+            return $redemption;
+        
+            });
+        
+        return response()->json([
+            'message' => 'Gift redeemed successfully',
+            'redemption' => $redemption->load(['ticket.guest', 'giftItem']),
+        ], 201);
+    
+        }
