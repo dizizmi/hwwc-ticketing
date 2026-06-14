@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Guest;
 use App\Models\Ticket;
+use App\Models\Redemption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Cache;
 
 class GuestController extends Controller
 {   
-    //list all guest
+    //list all guest, db hit once every 60s no matter how many checked it
     public function index(){
         $guests = Cache::remember('guests_all',60, function () {
             return Guest::with('lanyardType')->get();
@@ -57,6 +58,7 @@ class GuestController extends Controller
         ], 201);
     }
 
+    //same ticket scanned >1x accident, so cache return instant w/o hit db
     public function findByTicket(string $code)
     {
         $ticket = Cache::remember("ticket_{$code}", 30, function () use ($code) {
@@ -89,7 +91,7 @@ class GuestController extends Controller
             'checked_in' => true,
             'checked_in_at' => now(),
         ]); 
-
+        //no cache invalidation
         Cache::forget("ticket_{$code}");
         Cache::forget('guests_all');
 

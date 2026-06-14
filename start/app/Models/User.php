@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -68,4 +69,21 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Redemption::class);
     }
+
+    //helper methods to check roles
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
+    }
+
+    public function isScanner(): bool
+    {
+        return $this->role === 'scanner';
+    }
+
 }
