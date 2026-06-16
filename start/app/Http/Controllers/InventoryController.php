@@ -55,4 +55,21 @@ class InventoryController extends Controller
             'message' => 'Inventory updated successfully',
             'item'    => $item,
         ]);
+    //delete gift item
+    public function destroy(int $id)
+    {
+        $item = GiftItem::findOrFail($id);
+
+        if ($item->redeemed > 0) {
+            return response()->json([
+                'message' => 'Cannot delete item that has already been redeemed'
+            ], 409);
+        }
+
+        $item->delete();
+
+        return response()->json([
+            'message' => 'Gift item deleted successfully'
+        ]);
     }
+}
