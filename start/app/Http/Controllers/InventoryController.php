@@ -41,3 +41,18 @@ class InventoryController extends Controller
             'item'    => $item,
         ], 201);
     }
+    //update stock qty
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $item = GiftItem::findOrFail($id);
+        $item->update(['quantity' => $request->quantity]);
+
+        return response()->json([
+            'message' => 'Inventory updated successfully',
+            'item'    => $item,
+        ]);
+    }
