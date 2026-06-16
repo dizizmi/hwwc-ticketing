@@ -25,3 +25,23 @@ class ReportController extends Controller
     ]);
     }
 
+    //filter history redemptions
+    public function redemptions(Request $request)
+    {
+        $query = Redemption::with(['ticket.guest', 'giftItem', 'user'])
+            ->latest();
+            
+
+        //filer by gift item
+        if ($request->has('gift_item_id')) {
+            $query->where('gift_item_id', $request->gift_item_id);
+        }
+
+        //filter by date
+        if ($request->has('date')) {
+            $query->whereDate('redeemed_at', $request->date);
+        }
+
+        return response()->json($query->get());
+    }
+
