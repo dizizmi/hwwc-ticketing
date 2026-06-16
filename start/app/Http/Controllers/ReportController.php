@@ -45,3 +45,30 @@ class ReportController extends Controller
         return response()->json($query->get());
     }
 
+    //export csv
+    public function export()
+    {
+        $redemptions = Redemption::with(['ticket.guest', 'giftItem', 'user'])
+            ->latest()
+            ->get();
+        
+        $csv = "guest name, email, gift item, size, redeemed at, processed By\n";
+        //implode to get the specific datas
+        foreach ($redemptions as $r) {
+            $csv .= implode(',', [
+                $r->ticket->guest->name,
+                $r->ticket->guest->email,
+                $r->giftItem->name,
+                $r->giftItem->size ?? 'N/A', //check if exist or NA 
+                $r->redeemed_at,
+                $r->user->name,
+            ])."\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="redemptions.csv"',
+        ]);
+
+    }   
+
