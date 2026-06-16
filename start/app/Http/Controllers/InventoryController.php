@@ -20,3 +20,24 @@ class InventoryController extends Controller
 
         return response()->json($items);
     }
+    //add new gift
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'size'     => 'nullable|string',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $item = GiftItem::create([
+            'name'     => $request->name,
+            'size'     => $request->size,
+            'quantity' => $request->quantity,
+            'redeemed' => 0,
+        ]);
+
+        return response()->json([
+            'message' => 'Gift item added successfully',
+            'item'    => $item,
+        ], 201);
+    }
