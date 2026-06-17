@@ -13,7 +13,7 @@ class RoleMiddleware
     {   
         $user = Auth::guard('api')->user();
         //ensure user is fits one of the role before gg to controller
-        if (!$user || !in_array($user->role, $roles)) { #if NO user or wrong role !user
+        if (!$user || !in_array($user->role, $roles)) { //if NO user or wrong role !user
             return response()->json([
                 'message' => 'Unauthorised - insufficient permissions'
             ], 403);

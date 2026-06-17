@@ -1,3 +1,13 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Redemption;
+use App\Models\Guest;
+use App\Models\GiftItem;
+
+
 class ReportController extends Controller
 {
     //full redemption summary - guests, checked in, total redemption, list of gift items
@@ -72,3 +82,4 @@ class ReportController extends Controller
 
     }   
 
+}

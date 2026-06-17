@@ -1,3 +1,11 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\GiftItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+
 class InventoryController extends Controller
 {   //view all gift item and stock levels
     public function index()
@@ -55,6 +63,8 @@ class InventoryController extends Controller
             'message' => 'Inventory updated successfully',
             'item'    => $item,
         ]);
+    }
+    
     //delete gift item
     public function destroy(int $id)
     {

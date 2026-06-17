@@ -1,3 +1,21 @@
+<?php
+
+namespace App\Http\Controllers;
+use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Redemption;
+use App\Models\Ticket;
+use App\Models\GiftItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
+
+class RedemptionController extends Controller
+{
+    public function redeem(Request $request)
+    {
         $request->validate([
             'ticket_code' => 'required|string',
             'gift_item_id' => 'required|exists:gift_items,id',
@@ -24,13 +42,14 @@
                 'message' => 'Guest has already redeemed this gift'
             ], 409);
         }
+        
         //preventing race conditions, lock in db transaction
         $redemption = DB::transaction(function () use ($ticket, $request){
             $giftItem = GiftItem::lockForUpdate()->find($request->gift_item_id);
 
             //check inventory
             if ($giftItem->redeemed >= $giftItem->quantity){
-                throw new \Exception('Gift item no more');
+                throw new \Exception('Gift item no more'); //TODO: catch properly
             }
 
             //create redemption record
@@ -58,6 +77,7 @@
         ], 201);
     
         }
+
     public function history(string $code)
     {
         $ticket = Ticket::with(['redemptions.giftItem', 'guest'])
@@ -71,7 +91,8 @@
             'redemptions' => $ticket->redemptions,
         ]);
     }
-    //all redemptions (for report tab)
+
+    //all redemptions (for report tab) //TODO pagination
     public function allRedemptions()
     {
         $redemptions = Redemption::with(['ticket.guest', 'giftItem', 'user'])
@@ -80,4 +101,6 @@
 
         return response()->json($redemptions);
     } 
+
+}
 
