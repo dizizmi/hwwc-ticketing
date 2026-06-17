@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+defaults:
+  run:
+    working-directory: start
+
+
 jobs:
   test:
     name: Run Tests
