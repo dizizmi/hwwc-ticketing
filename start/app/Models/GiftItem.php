@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Redemption;
 
 class GiftItem extends Model
@@ -24,7 +25,7 @@ class GiftItem extends Model
     }
 
     //helper to check remainders stock
-    public function remainingStock(): int 
+    public function remainingStock(): int
     {
         return $this->quantity - $this->redeemed;
     }

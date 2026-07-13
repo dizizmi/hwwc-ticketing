@@ -22,6 +22,10 @@ Route::middleware('auth:api', 'throttle:global')->group(function () {
         Route::get('/report/summary',[ReportController::class, 'summary']);
         Route::get('/report/redemptions',[ReportController::class, 'redemptions']);
         Route::get('/report/export', [ReportController::class, 'export']);
+        //forensics
+        Route::get('/inventory/deleted', [InventoryController::class, 'deleted']);
+        Route::post('/inventory/{id}/restore',  [InventoryController::class, 'restore']);
+
     });
 
     //admin staff

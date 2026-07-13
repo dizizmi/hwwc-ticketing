@@ -7,7 +7,52 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class InventoryController extends Controller
-{   //view all gift item and stock levels
+{   
+    public function deleted()
+    {
+        //onlyTrashed() returns ONLY soft deleted records
+        $deletedItems = GiftItem::onlyTrashed()->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'size' => $item->size,
+                'quantity' => $item->quantity,
+                'redeened' => $item->redeemed,
+                //when was it deletd?
+                'deleted_at' => $item->deleted_at,
+
+
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Soft deleted gift items',
+            'total_deleted' => $deletedItems->count(),
+            'items' => $deletedItems,
+        ]);
+    }
+    
+    public function restore(int $id)
+    {
+        //withTrashed() include soft deleted records in query
+        $item = GiftItem::withTrashed()->findOrFail($id);
+
+        if (!$item->trashed()){
+            return response()->json([
+                'message' => 'Item is not deleted'
+            ], 400);
+        }
+
+        $item->restore();
+
+        return response()->json([
+            'message' => 'Gift item restored successfully',
+            'item' => $item,
+        ]);
+    
+    }
+    
+    //view all gift item and stock levels
     public function index()
     {
         $items = GiftItem::all()->map(function ($item) {
